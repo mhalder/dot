@@ -1,70 +1,50 @@
--- Gets the root dir from either:
--- * connected lsp
--- * .git from file
--- * .git from cwd
--- * cwd
----@param opts? table
-local function project_files(opts)
-  opts = opts or {}
-  opts.cwd = require("util").get_root()
-  require("telescope.builtin").find_files(opts)
-end
-
 return {
-  "nvim-telescope/telescope.nvim",
-  cmd = { "Telescope" },
+	"nvim-telescope/telescope.nvim",
+	cmd = { "Telescope" },
 
-  dependencies = {
-    { "nvim-telescope/telescope-fzf-native.nvim", build = "make" },
-  },
-  keys = {
-    { "<leader><space>", project_files, desc = "Find File" },
-    {
-      "<leader>fl",
-      function()
-        require("telescope.builtin").find_files({
-          cwd = require("lazy.core.config").options.root,
-        })
-      end,
-      desc = "Find Plugin File",
-    },
-  },
-  config = function()
-    -- local actions = require("telescope.actions")
+	dependencies = {
+		{ "nvim-telescope/telescope-fzf-native.nvim", build = "make" },
+		"cljoly/telescope-repo.nvim",
+		"nvim-telescope/telescope-project.nvim",
+	},
 
-    local telescope = require("telescope")
-    local borderless = true
-    telescope.setup({
-      defaults = {
-        layout_strategy = "horizontal",
-        layout_config = {
-          prompt_position = "top",
-        },
-        sorting_strategy = "ascending",
-        mappings = {
-          i = {
-            ["<c-t>"] = function(...)
-              return require("trouble.providers.telescope").open_with_trouble(...)
-            end,
-            ["<C-i>"] = function(...)
-              project_files({ no_ignore = true })
-            end,
-            ["<C-h>"] = function(...)
-              project_files({ hidden = true })
-            end,
-            ["<C-Down>"] = function(...)
-              return require("telescope.actions").cycle_history_next(...)
-            end,
-            ["<C-Up>"] = function(...)
-              return require("telescope.actions").cycle_history_prev(...)
-            end,
-          },
-        },
-        prompt_prefix = " ",
-        selection_caret = " ",
-        winblend = borderless and 0 or 10,
-      },
-    })
-    telescope.load_extension("fzf")
-  end,
+	config = function()
+		local telescope = require("telescope")
+		local actions = require("telescope.actions")
+		telescope.load_extension("fzf")
+		telescope.load_extension("repo")
+		-- telescope.load_extension("git_worktree")
+		-- telescope.load_extension("harpoon")
+		telescope.setup({
+			defaults = {
+				mappings = {
+					i = {
+						["jj"] = actions.close,
+						["<C-u>"] = false,
+					},
+					n = {
+						["jj"] = actions.close,
+						["cd"] = function(prompt_bufnr)
+							local selection = require("telescope.actions.state").get_selected_entry()
+							local dir = vim.fn.fnamemodify(selection.path, ":p:h")
+							require("telescope.actions").close(prompt_bufnr)
+							-- Depending on what you want put `cd`, `lcd`, `tcd`
+							vim.cmd(string.format("silent cd %s", dir))
+						end,
+					},
+				},
+				pickers = {
+					telescope.extensions.project.project({}),
+				},
+			},
+			extensions = {
+				fzf = {
+					fuzzy = true, -- false will only do exact matching
+					override_generic_sorter = true, -- override the generic sorter
+					override_file_sorter = true, -- override the file sorter
+					case_mode = "smart_case", -- or "ignore_case" or "respect_case"
+				},
+			},
+		})
+	end,
 }

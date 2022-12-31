@@ -50,7 +50,6 @@ function M.config()
         vim.keymap.set(mode, l, r, opts)
       end
 
-      -- Navigation
       map("n", "]h", function()
         if vim.wo.diff then
           return "]h"
@@ -71,7 +70,6 @@ function M.config()
         return "<Ignore>"
       end, { expr = true, desc = "Prev Hunk" })
 
-      -- Actions
       map({ "n", "v" }, "<leader>ghs", ":Gitsigns stage_hunk<CR>", "Stage Hunk")
       map({ "n", "v" }, "<leader>ghr", ":Gitsigns reset_hunk<CR>", "Reset Hunk")
       map("n", "<leader>ghS", gs.stage_buffer, "Stage Buffer")
@@ -86,7 +84,6 @@ function M.config()
         gs.diffthis("~")
       end, "Diff This ~")
 
-      -- Text object
       map({ "o", "x" }, "ih", ":<C-U>Gitsigns select_hunk<CR>", "GitSigns Select Hunk")
     end,
   })

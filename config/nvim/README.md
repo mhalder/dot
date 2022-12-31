@@ -2,6 +2,36 @@
 
 ![image](https://user-images.githubusercontent.com/292349/209700913-e4761e92-f1ba-497d-8d4c-e41b38cb54a1.png)
 
+## Keybindings
+
+```lua
+local cmp_status_ok, _ = pcall(require, "telescope")
+if cmp_status_ok then
+  vim.keymap.set('n', '<leader>?', require('telescope.builtin').oldfiles, { desc = '[?] Find recently opened files' })
+  vim.keymap.set('n', '<leader><space>', require('telescope.builtin').buffers, { desc = '[ ] Find existing buffers' })
+  vim.keymap.set('n', '<leader>/', function()
+    require('telescope.builtin').current_buffer_fuzzy_find(require('telescope.themes').get_dropdown {
+      winblend = 10,
+      previewer = false,
+    })
+  end, { desc = '[/] Fuzzily search in current buffer]' })
+
+  vim.keymap.set('n', '<leader>sf', require('telescope.builtin').find_files, { desc = '[S]earch [F]iles' })
+  vim.keymap.set('n', '<leader>sh', require('telescope.builtin').help_tags, { desc = '[S]earch [H]elp' })
+  vim.keymap.set('n', '<leader>sw', require('telescope.builtin').grep_string, { desc = '[S]earch current [W]ord' })
+  vim.keymap.set('n', '<leader>sg', require('telescope.builtin').live_grep, { desc = '[S]earch by [G]rep' })
+  vim.keymap.set('n', '<leader>sd', require('telescope.builtin').diagnostics, { desc = '[S]earch [D]iagnostics' })
+end
+
+swenv.setup({
+  get_venvs = function(venvs_path)
+    return require("swenv.api").get_venvs(venvs_path)
+  end,
+  venvs_path = vim.fn.expand("~/.cache/pypoetry/virtualenvs"),
+  post_set_venv = nil
+})
+
+
 <!-- plugins:start -->
 
 ## Plugins
@@ -87,3 +117,10 @@
 - [zen-mode.nvim](https://github.com/folke/zen-mode.nvim)
 
 <!-- plugins:end -->
+
+```
+
+```
+
+```
+
